@@ -9,11 +9,12 @@ using namespace sf;
 
 
 
-void PlaceTile(char letter, int x, int y, char (*arr)[BOARD_SIZE], Sprite** TileSprite, sf::RenderWindow& window)
-{
+void PlaceTile(char letter, int x, int y, char (*toVerify)[BOARD_SIZE], Sprite** TileSprite, sf::RenderWindow& window) //takes a tile, adds it to the 
+//toVerify array, then draws the tile on the board
+{//returns false if tile could not be placed
     int tile = int(letter);
     tile = tile - 65;
-    arr[x][y] = letter;
+    toVerify[x][y] = letter;
     TileSprite[tile]->setPosition(5 + (73 * x), 5 + (73 * y));
     window.draw(*TileSprite[tile]);
 }
@@ -66,7 +67,7 @@ void DrawRack(char* rack, Sprite** TileSprite, sf::RenderWindow& window)
     }
 }
 
-void EraseTile(int x, int y, char(*toVerify)[BOARD_SIZE], Sprite board, Sprite** TileSprite, sf::RenderWindow& window) 
+/*void EraseTile(int x, int y, char(*toVerify)[BOARD_SIZE], Sprite board, Sprite** TileSprite, sf::RenderWindow& window)
 //will only erase tiles that are not verified, so only send toVerify array
 {
     if (toVerify[x][y] != '0')
@@ -75,17 +76,19 @@ void EraseTile(int x, int y, char(*toVerify)[BOARD_SIZE], Sprite board, Sprite**
         window.draw(*TileSprite[27]);
         toVerify[x][y] = '0';
     }
-}
+}*/ 
 
-void ReplaceTile(int x, int y,char* tiles ,char(*toVerify)[BOARD_SIZE]) //takes x/y coordinate of tile to be moved back to the rack
+// ^ should not be necessary as the board is redrawn every frame, and any tile that is not set will be set as empty.
+
+void ReplaceTile(int x, int y,char* Rack,char(*toVerify)[BOARD_SIZE]) //takes x/y coordinate of tile to be moved back to the rack
 {
     if (toVerify[x][y] != '0')
     {
-        for (size_t i = 0; i < 7; i++)
+        for (size_t i = 0; i < RACK_SIZE; i++)
         {
-            if (tiles[i] == '0')
+            if (Rack[i] == '0')
             {
-                tiles[i] = toVerify[x][y];
+                Rack[i] = toVerify[x][y];
                 toVerify[x][y] = '0';
             }
         }
@@ -95,8 +98,6 @@ void ReplaceTile(int x, int y,char* tiles ,char(*toVerify)[BOARD_SIZE]) //takes 
 bool VerifyBoard(char(*BoardRep)[BOARD_SIZE], char(*toVerify)[BOARD_SIZE])
 {
     int Verify[7][2]; //stores the x and y position of tiles that need to be verified
-    int start = 0;
-    string word = "";
     for (size_t i = 0; i < 7; i++)
     {
         for (size_t j = 0; j < 2; j++)
@@ -104,6 +105,10 @@ bool VerifyBoard(char(*BoardRep)[BOARD_SIZE], char(*toVerify)[BOARD_SIZE])
             Verify[i][j] = -1;
         }
     }
+
+
+    string word = "";
+    int start = 0;
     char Store[BOARD_SIZE][BOARD_SIZE];
     for (size_t i = 0; i < BOARD_SIZE; i++) //merge BoardRep and toVerify into one board, Store
     {
@@ -117,6 +122,14 @@ bool VerifyBoard(char(*BoardRep)[BOARD_SIZE], char(*toVerify)[BOARD_SIZE])
                 Verify[start][1] = j;
                 start++;
             }
+        }
+    }
+
+    for (size_t i = 0; i < 7; i++) //this loop ensures that all the tiles fall along the same vertical or horizontal line
+    {
+        if (Verify[i][0] != Verify[0][0] && Verify[i][1] != Verify[0][1] && Verify[i][0] != -1)
+        {
+            return false;
         }
     }
     for (size_t i = 0; i < 7; i++)
@@ -141,17 +154,12 @@ bool VerifyBoard(char(*BoardRep)[BOARD_SIZE], char(*toVerify)[BOARD_SIZE])
     return true;
 }
 
-bool VerifyWord(string word) //perform binary search to match given word against the dictionary of words.
-{
-
-}
-
 int main()
 {
 
-    char* tiles = new char[7];
+    char* Rack = new char[7];
     Bag bag;
-    tiles = bag.Pull(7);
+    Rack = bag.Pull(7);
     int toPlace = -1;
 
     cout << "Starting GADDAG generation..." << endl;
@@ -189,6 +197,15 @@ int main()
     board.setScale(1.5, 1.5);
     sf::RectangleShape background;
     background.setSize(sf::Vector2f(1304, 1304));
+    
+
+    Texture ButtonTexture;
+    ButtonTexture.loadFromFile("Submit.png");
+    sf::Sprite submit_button;
+    submit_button.setTexture(ButtonTexture);
+    submit_button.setScale(1, 1);
+    submit_button.setPosition(900, 1150);
+
 
     char BoardRep[BOARD_SIZE][BOARD_SIZE]; //representation of board in char array form
     char toVerify[BOARD_SIZE][BOARD_SIZE]; //array to place tiles on before they are verified, is later copied into the BoardRep 
@@ -215,27 +232,32 @@ int main()
             {
                 int x = Mouse::getPosition(window).x;
                 int y = Mouse::getPosition(window).y;
-                x = (x + 5) / TILE_SIZE;
-                y = (y + 5) / TILE_SIZE;
+                int Tilex = (x + 5) / TILE_SIZE;
+                int Tiley = (y + 5) / TILE_SIZE;
                 if (event.mouseButton.button == sf::Mouse::Left)
                 {
                     
-                    if (x == 16 && y <= 7 && tiles[y] != '0') //select from the rack
+                    if (Tilex == 16 && Tiley <= 7 && Rack[Tiley] != '0') //select from the rack
                     {
-                        toPlace = y;
+                        toPlace = Tiley;
                         cout << toPlace << endl;
                     }
-                    else if (toPlace != -1 && x <= 15 && y <= 15 && BoardRep[x][y] == '0') //place from rack to the board
+                    else if (toPlace != -1 && Tilex <= 15 && Tiley <= 15 && BoardRep[Tilex][Tiley] == '0' && toVerify[Tilex][Tiley] == '0') //place from rack to the board
                     {
-                        PlaceTile(tiles[toPlace], x, y, toVerify, TileSprite, window);
-                        tiles[toPlace] = '0';
+                        PlaceTile(Rack[toPlace], Tilex, Tiley, toVerify, TileSprite, window);
+                        Rack[toPlace] = '0';
                         toPlace = -1;
                     }
+                    else if (x > 900 && x < 1200 && y > 1150 && y < 1250) //if submit button is clicked
+                    {
+                        //verify board
+                    }
+                    
                    
                 }
                 if (event.mouseButton.button == sf::Mouse::Right)
                 {
-                    ReplaceTile(x, y, tiles, toVerify);
+                    ReplaceTile(Tilex, Tiley, Rack, toVerify);
                 }
             }
         }
@@ -244,8 +266,10 @@ int main()
         window.clear();
         window.draw(background);
         DrawBoard(BoardRep, toVerify, board, TileSprite, window);
-        DrawRack(tiles, TileSprite, window);
-        
+        DrawRack(Rack, TileSprite, window);
+        window.draw(submit_button);
+       
+
         window.display();
     }
     
@@ -258,5 +282,14 @@ int main()
 //button to call verify
 //button to call replace
 //
+//VARIABLES
+
+//TileTexture - an array of tile textures, textures are the pixel pattern, when combined with the shape (e.g, rectangle) they become a sprite
+//TileSprite - array of tile sprites
+
+//STRUCTURE:
+
+//tiles that have been placed and verified to form valid words are stored in the 2d array BoardRep.
+//tiles that are placed but not verified are in the toVerify 2d array.
 
 //If you want to export as .exe you'll need to add static dependencies :) 

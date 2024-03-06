@@ -10,6 +10,10 @@ Bag::Bag()
 	size_ = 99; //always points to last element of array
 
 	arr_ = new char[101]; //100 tiles, plus one for the empty location used to make the shrinking easier.
+	//this is, frankly, a dumb way to populate the bag
+	//but i cannot be bothered to change it right now
+	//save for when procrastination is necessary
+	//and change it to arr_ = {'A', 'A', ..... 'Z'};
 	for (size_t i = 0; i < 9; i++) { arr_[i] = 'A'; }
 	for (size_t i = 9; i < 11; i++) { arr_[i] = 'B'; }
 	for (size_t i = 11; i < 13; i++) { arr_[i] = 'C'; }
@@ -36,8 +40,8 @@ Bag::Bag()
 	arr_[94] = 'X';
 	for (size_t i = 95; i < 97; i++) { arr_[i] = 'Y'; }
 	arr_[97] = 'Z';
-	for (size_t i = 98; i < 100; i++) { arr_[i] = '['; } // represents blank, used as it's ascii value is 91, as Z is 90.
-	arr_[100] = '0'; // represents empty
+	for (size_t i = 98; i < 100; i++) { arr_[i] = '['; } // represents blank, used as it's ascii value is 91, one more than Z at 90.
+	arr_[100] = '0'; // represents empty, used for shrinking the bag
 }
 
 char* Bag::Pull(int i)
