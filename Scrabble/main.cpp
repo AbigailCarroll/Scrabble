@@ -154,19 +154,14 @@ int main()
     tiles = bag.Pull(7);
     int toPlace = -1;
 
-    
     cout << "Starting GADDAG generation..." << endl;
-    GADDAG* tree = new GADDAG("GADDAG.txt");
+    Node* root = GenerateGADDAG("GADDAG.txt");
     cout << "Finished GADDAG generation" << endl;
-    
-    if (tree->findWord("A+A"))
-    {
-        cout << "A+A Found" << endl;
-    }
-    else
-    {
-        cout << "word not found" << endl;
-    }
+
+    //if (!verifyGADDAG(root, "GADDAG.txt")) { cout << "Invalid GADDAG" << endl; }
+    //else { cout << "Valid GADDAG" << endl; }
+
+   
     RenderWindow window(VideoMode(1304, 1304), "Scrabble!");
     Texture boardTexture;
     boardTexture.loadFromFile("Board.jpg");
