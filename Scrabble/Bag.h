@@ -18,5 +18,5 @@ private:
 	int Random(int i);
 
 	int size_;
-	char* arr_;
+	vector<char> arr_;
 };

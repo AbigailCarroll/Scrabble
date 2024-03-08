@@ -213,6 +213,7 @@ int main()
     char* Rack = new char[7];
     Bag bag;
     Rack = bag.Pull(7);
+    /*
     Rack[0] = 'C';
     Rack[1] = 'A';
     Rack[2] = 'T';
@@ -220,6 +221,8 @@ int main()
     Rack[4] = 'B';
     Rack[5] = 'A';
     Rack[6] = 'G';
+
+    */
     int toPlace = -1;
 
     cout << "Starting GADDAG generation..." << endl;

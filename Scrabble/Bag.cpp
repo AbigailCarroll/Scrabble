@@ -9,46 +9,42 @@ Bag::Bag()
 {
 	size_ = 99; //always points to last element of array
 
-	arr_ = new char[101]; //100 tiles, plus one for the empty location used to make the shrinking easier.
-	//this is, frankly, a dumb way to populate the bag
-	//but i cannot be bothered to change it right now
-	//save for when procrastination is necessary
-	//and change it to arr_ = {'A', 'A', ..... 'Z'};
-	for (size_t i = 0; i < 9; i++) { arr_[i] = 'A'; }
-	for (size_t i = 9; i < 11; i++) { arr_[i] = 'B'; }
-	for (size_t i = 11; i < 13; i++) { arr_[i] = 'C'; }
-	for (size_t i = 13; i < 17; i++) { arr_[i] = 'D'; }
-	for (size_t i = 17; i < 29; i++) { arr_[i] = 'E'; }
-	for (size_t i = 29; i < 31; i++) { arr_[i] = 'F'; }
-	for (size_t i = 31; i < 34; i++) { arr_[i] = 'G'; }
-	for (size_t i = 34; i < 36; i++) { arr_[i] = 'H'; }
-	for (size_t i = 36; i < 45; i++) { arr_[i] = 'I'; }
-	arr_[45] = 'J';
-	arr_[46] = 'K';
-	for (size_t i = 47; i < 51; i++) { arr_[i] = 'L'; }
-	for (size_t i = 51; i < 53; i++) { arr_[i] = 'M'; }
-	for (size_t i = 53; i < 59; i++) { arr_[i] = 'N'; }
-	for (size_t i = 59; i < 67; i++) { arr_[i] = 'O'; }
-	for (size_t i = 67; i < 69; i++) { arr_[i] = 'P'; }
-	arr_[69] = 'Q';
-	for (size_t i = 70; i < 76; i++) { arr_[i] = 'R'; }
-	for (size_t i = 76; i < 80; i++) { arr_[i] = 'S'; }
-	for (size_t i = 80; i < 86; i++) { arr_[i] = 'T'; }
-	for (size_t i = 86; i < 90; i++) { arr_[i] = 'U'; }
-	for (size_t i = 90; i < 92; i++) { arr_[i] = 'V'; }
-	for (size_t i = 92; i < 94; i++) { arr_[i] = 'W'; }
-	arr_[94] = 'X';
-	for (size_t i = 95; i < 97; i++) { arr_[i] = 'Y'; }
-	arr_[97] = 'Z';
-	for (size_t i = 98; i < 100; i++) { arr_[i] = '['; } // represents blank, used as it's ascii value is 91, one more than Z at 90.
-	arr_[100] = '0'; // represents empty, used for shrinking the bag
+	
+	for (size_t i = 0; i < 9; i++) { arr_.push_back('A'); }
+	for (size_t i = 9; i < 11; i++) { arr_.push_back('B'); }
+	for (size_t i = 11; i < 13; i++) { arr_.push_back('C'); }
+	for (size_t i = 13; i < 17; i++) { arr_.push_back('D'); }
+	for (size_t i = 17; i < 29; i++) { arr_.push_back('E'); }
+	for (size_t i = 29; i < 31; i++) { arr_.push_back('F'); }
+	for (size_t i = 31; i < 34; i++) { arr_.push_back('G'); }
+	for (size_t i = 34; i < 36; i++) { arr_.push_back('H'); }
+	for (size_t i = 36; i < 45; i++) { arr_.push_back('I'); }
+	arr_.push_back('J');
+	arr_.push_back('K');
+	for (size_t i = 47; i < 51; i++) { arr_.push_back('L'); }
+	for (size_t i = 51; i < 53; i++) { arr_.push_back('M'); }
+	for (size_t i = 53; i < 59; i++) { arr_.push_back('N'); }
+	for (size_t i = 59; i < 67; i++) { arr_.push_back('O'); }
+	for (size_t i = 67; i < 69; i++) { arr_.push_back('P'); }
+	arr_.push_back('Q');
+	for (size_t i = 70; i < 76; i++) { arr_.push_back('R'); }
+	for (size_t i = 76; i < 80; i++) { arr_.push_back('S'); }
+	for (size_t i = 80; i < 86; i++) { arr_.push_back('T'); }
+	for (size_t i = 86; i < 90; i++) { arr_.push_back('U'); }
+	for (size_t i = 90; i < 92; i++) { arr_.push_back('V'); }
+	for (size_t i = 92; i < 94; i++) { arr_.push_back('W'); }
+	arr_.push_back('X');
+	for (size_t i = 95; i < 97; i++) { arr_.push_back('Y'); }
+	arr_.push_back('Z');
+	for (size_t i = 98; i < 100; i++) { arr_.push_back('['); } // represents blank, used as it's ascii value is 91, one more than Z at 90.
+	 
 }
 
 char* Bag::Pull(int i)
 {
-	if (size_ < 7)
+	if (arr_.size() < 7)
 	{
-		i = size_;
+		i = arr_.size();
 	}
 	char* outputarr = new char[i];
 	int rand;
@@ -57,14 +53,9 @@ char* Bag::Pull(int i)
 	for (size_t j = 0; j < i; j++)
 	{
 		rand = Random(size_);
-		copy = arr_[rand];
-		outputarr[j] = copy;
-		
-		for (size_t k = rand; k < size_; k++)
-		{
-			arr_[k] = arr_[k + 1];
-		}
-		size_--;
+		outputarr[j] = arr_[rand];
+		arr_.erase(arr_.begin() + rand); // erases letter at index rand
+		cout << arr_.size() << endl;
 	}
 	for (size_t j = 0; j < i; j++)
 	{
