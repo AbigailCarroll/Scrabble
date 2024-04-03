@@ -40,6 +40,11 @@ Bag::Bag()
 	 
 }
 
+Bag::~Bag()
+{
+	arr_.clear();
+}
+
 char* Bag::Pull(int i)
 {
 	if (arr_.size() < 7)

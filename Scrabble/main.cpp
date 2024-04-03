@@ -82,7 +82,7 @@ void DrawRack(char* rack, Sprite** TileSprite, sf::RenderWindow& window)
 
 // ^ should not be necessary as the board is redrawn every frame, and any tile that is not set will be set as empty.
 
-void ReplaceTile(int x, int y,char* Rack,char(*toVerify)[BOARD_SIZE]) //takes x/y coordinate of tile to be moved back to the rack
+void ReplaceTile(int x, int y,char* Rack,char(*toVerify)[BOARD_SIZE], vector<tuple<int, int, char>> toVerify_Vector) //takes x/y coordinate of tile to be moved back to the rack
 {
     if (toVerify[x][y] != '0')
     {
@@ -95,6 +95,7 @@ void ReplaceTile(int x, int y,char* Rack,char(*toVerify)[BOARD_SIZE]) //takes x/
             }
         }
     }
+    
 }
 
 string getWord(char** Store, int direction, int x, int y) //direction is up/down or left/right, 1 for up/down 0 for left/right
@@ -119,45 +120,73 @@ string getWord(char** Store, int direction, int x, int y) //direction is up/down
     return word;
 }
 
-bool VerifyBoard(char(*BoardRep)[BOARD_SIZE], char(*toVerify)[BOARD_SIZE], Node* root)
+void DisplayBoard(char(*Board)[BOARD_SIZE], vector<tuple<int, int, char>> toVerify_Vector, string message)
 {
-    int Verify[7][2]; //stores the x and y position of tiles that need to be verified
+    for (size_t i = 0; i < BOARD_SIZE; i++)
+    {
+        for (size_t j = 0; j < BOARD_SIZE; j++)
+        {
+            cout << Board[j][i] << ", ";
+        }
+        cout << endl;
+    }
+    for (size_t i = 0; i < toVerify_Vector.size(); i++)
+    {
+        cout << get<0>(toVerify_Vector[i]) << ", " << get<1>(toVerify_Vector[i]) << ": " << get<2>(toVerify_Vector[i]) << endl;
+    }
+    cout << message << endl;
+}
+
+bool VerifyBoard(char(*BoardRep)[BOARD_SIZE], char(*toVerify)[BOARD_SIZE],vector<tuple<int, int, char>> toVerify_Vector,  Node* root) //NEEDS TO BE OPTIMISED
+{
+    /*
+    int** Verify = new int* [7]; //stores the x and y position of tiles that need to be verified
     for (size_t i = 0; i < 7; i++)
     {
+        Verify[i] = new int[2];
         for (size_t j = 0; j < 2; j++)
         {
             Verify[i][j] = -1;
         }
-    }
+    }*/
+
     int start = 0;
-    char** Store = new char* [BOARD_SIZE];
+    char** Store = new char*[BOARD_SIZE];
     //char Store[BOARD_SIZE][BOARD_SIZE];
-    for (size_t i = 0; i < BOARD_SIZE; i++) //merge BoardRep and toVerify into one board, Store
+    for (size_t i = 0; i < BOARD_SIZE; i++) //creates Store, a copy of BoardRep, consider changing to std::copy if possible in future.
     {
         Store[i] = new char[BOARD_SIZE];
         for (size_t j = 0; j < BOARD_SIZE; j++)
         {
             Store[i][j] = BoardRep[i][j];
-            if (toVerify[i][j] != '0')
-            {
-                Store[i][j] = toVerify[i][j];
-                Verify[start][0] = i;
-                Verify[start][1] = j;
-                start++;
-            }
         }
     }
-    for (size_t i = 0; i < 7; i++) //this loop ensures that all the tiles fall along the same vertical or horizontal line
+    for (size_t i = 0; i < toVerify_Vector.size(); i++)
     {
-        if (Verify[i][0] != Verify[0][0] && Verify[i][1] != Verify[0][1] && Verify[i][0] != -1)
+        Store[get<0>(toVerify_Vector[i])][get<1>(toVerify_Vector[i])] = get<2>(toVerify_Vector[i]); // cop
+    }
+
+    bool xLine = true;
+    bool yLine = true;
+    for (size_t i = 0; i < toVerify_Vector.size(); i++) //this loop ensures that all the tiles fall along the same vertical or horizontal line
+    {//need to check that either all X values are the same, or all Y values are the same, maximum O(2n) time, where N is the number of tiles
+        if (get<0>(toVerify_Vector[i]) != get<0>(toVerify_Vector[0]))//check xs are the same
         {
-            return false;
+            xLine = false;
+        }
+        if (get<1>(toVerify_Vector[i]) != get<1>(toVerify_Vector[0]))//check ys are the same
+        {
+            yLine = false;
         }
     }
-    for (size_t i = 0; i < 7; i++)
+    if (xLine == false && yLine == false)
     {
-        if (Verify[i][0] != -1)
-        {
+        return false;
+    }
+
+    for (size_t i = 0; i < toVerify_Vector.size(); i++)
+    {
+       
             /*string word = "";
             int targetX = Verify[i][0], targetY = Verify[i][1];
             while (Store[targetX][targetY] != '0') //gets all letters to the left of the target tile.
@@ -173,13 +202,13 @@ bool VerifyBoard(char(*BoardRep)[BOARD_SIZE], char(*toVerify)[BOARD_SIZE], Node*
             }
             */
             vector<string> words;
-            words.push_back(getWord(Store, 0, Verify[i][0], Verify[i][1])); //checks left/right
-            words.push_back(getWord(Store, 1, Verify[i][0], Verify[i][1])); //checks up/down
+            //words.push_back(getWord(Store, 0, Verify[i][0], Verify[i][1])); //checks left/right
+           // words.push_back(getWord(Store, 1, Verify[i][0], Verify[i][1])); //checks up/down
+
+            words.push_back(getWord(Store, 0, get<0>(toVerify_Vector[i]), get<1>(toVerify_Vector[i]))); //checks left/right
+            words.push_back(getWord(Store, 1, get<0>(toVerify_Vector[i]), get<1>(toVerify_Vector[i])));  //checks up/down
             for (size_t j = 0; j < words.size(); j++)
             {
-                cout << words.size() << endl;
-                cout << "i: " << i << endl;
-                cout << "j: " << j << endl;
                 if (words[j].length() > 1)
                 {
                     cout << "word to verify is: " << words[j] << endl;
@@ -193,13 +222,23 @@ bool VerifyBoard(char(*BoardRep)[BOARD_SIZE], char(*toVerify)[BOARD_SIZE], Node*
             }
             
             
-        }
         
+        
+    }// board has been verified, cleanup step
+    for (size_t i = 0; i < toVerify_Vector.size(); i++)
+    {
+        BoardRep[get<0>(toVerify_Vector[i])][get<1>(toVerify_Vector[i])] = get<2>(toVerify_Vector[i]);
     }
 
+    cout << "TEST 1" << endl;
     for (size_t i = 0; i < BOARD_SIZE; i++)
     {
         delete[] Store[i];
+        for (size_t j = 0; j < BOARD_SIZE; j++)
+        {
+            toVerify[i][j] = '0';
+            
+        }
     }
     delete[] Store;
     return true;
@@ -213,7 +252,7 @@ int main()
     char* Rack = new char[7];
     Bag bag;
     Rack = bag.Pull(7);
-    /*
+    
     Rack[0] = 'C';
     Rack[1] = 'A';
     Rack[2] = 'T';
@@ -222,7 +261,7 @@ int main()
     Rack[5] = 'A';
     Rack[6] = 'G';
 
-    */
+    
     int toPlace = -1;
 
     cout << "Starting GADDAG generation..." << endl;
@@ -272,6 +311,10 @@ int main()
 
     char BoardRep[BOARD_SIZE][BOARD_SIZE]; //representation of board in char array form
     char toVerify[BOARD_SIZE][BOARD_SIZE]; //array to place tiles on before they are verified, is later copied into the BoardRep 
+    //the array is good for when you want to check if a specific coordiant has a tile waiting to be verified
+    //vector is good to get all the tiles you want to verify, without having to search through the whole array (225 entries)
+    //it's more bookkeeping, but makes the VerifyBoard function MUCH more efficient, useful as it has to be run a lot to verify all the potential bot moves.
+    vector<tuple<int, int, char>> toVerify_Vector; // X, Y, Letter value.
     //array once it's verified the tiles form legal words
     for (size_t i = 0; i < BOARD_SIZE; i++)
     {
@@ -308,14 +351,16 @@ int main()
                     else if (toPlace != -1 && Tilex <= 15 && Tiley <= 15 && BoardRep[Tilex][Tiley] == '0' && toVerify[Tilex][Tiley] == '0') //place from rack to the board
                     {
                         PlaceTile(Rack[toPlace], Tilex, Tiley, toVerify, TileSprite, window);
+                        toVerify_Vector.push_back(make_tuple(Tilex, Tiley, Rack[toPlace]));
                         Rack[toPlace] = '0';
                         toPlace = -1;
                     }
                     else if (x > 900 && x < 1200 && y > 1150 && y < 1250) //if submit button is clicked
                     {
-                        if (VerifyBoard(BoardRep, toVerify, root))
+                        if (VerifyBoard(BoardRep, toVerify, toVerify_Vector, root))
                         {
                             cout << "Board verified" << endl;
+                            toVerify_Vector.clear();
                         }
                         else { cout << "Board not verified" << endl; }
                     }
@@ -324,7 +369,15 @@ int main()
                 }
                 if (event.mouseButton.button == sf::Mouse::Right)
                 {
-                    ReplaceTile(Tilex, Tiley, Rack, toVerify);
+                    ReplaceTile(Tilex, Tiley, Rack, toVerify, toVerify_Vector);
+                    for (size_t i = 0; i < toVerify_Vector.size(); i++)
+                    {
+                        if (Tilex == get<0>(toVerify_Vector[i]) && Tiley == get<1>(toVerify_Vector[i]))
+                        {
+                            toVerify_Vector.erase(toVerify_Vector.begin() + i);
+                            cout << i << endl;
+                        }
+                    }
                 }
             }
         }
@@ -340,14 +393,17 @@ int main()
         window.display();
     }
     
+    delete[] TileSprite;
+    delete[] TileTexture;
+    delete[] Rack;
     return 0;
 }
 
-//TODO BEFORE IMPLEMENTING COMPUTER PLAYER
-//Replace function in Bag.cpp
-//verify moves - DONE
-//button to call verify - DONE
-//button to call replace - DONE (sort of, no button but right click works)
+//TODO 
+
+//Start implementing computer player
+//begin with move generation, once this is done  
+
 //
 //VARIABLES
 
