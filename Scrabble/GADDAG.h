@@ -12,6 +12,8 @@ using namespace std;
 
 	bool verifyGADDAG(struct Node* root, string filepath);
 
+	Node* findChild(Node* node, char L);
+
 //each node represents a letter as part of a word in the GADDAG trie
 //nodes should be able to have children inserted dynamically to save on memory usage, otherwise each node (even terminal) would store space 
 // for 27 (alphabet + joiner) child nodes. better to add them as trie is constructed.

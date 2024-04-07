@@ -20,13 +20,19 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Bag.cpp" />
+    <ClCompile Include="Board.cpp" />
     <ClCompile Include="GADDAG.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Game.cpp" />
+    <ClCompile Include="Tile.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Bag.h" />
+    <ClInclude Include="Board.h" />
     <ClInclude Include="Consts.h" />
     <ClInclude Include="GADDAG.h" />
+    <ClInclude Include="Game.h" />
+    <ClInclude Include="Tile.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>

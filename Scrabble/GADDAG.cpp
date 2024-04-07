@@ -1,4 +1,4 @@
-#include "GADDAG.h"
+//#include "GADDAG.h"
 #include "Consts.h"
 #include <fstream>
 #include <iostream>
@@ -8,7 +8,7 @@ using namespace std::chrono;
 
 struct Node
 {
-	struct Node* children[MAX_CHILDREN];
+	struct Node* children[MAX_CHILDREN]; //child nodes are stored as an index to the letter they represent, i.e children[0] is the node for 'A', if it is nullptr the node has no children 'A'
 	bool terminal;
 };
 
@@ -88,6 +88,16 @@ Node* GenerateGADDAG(string filepath) //runs in ~1.5 seconds with GADDAG.txt
 	return root;
 }
 
+Node* findChild(Node* node, char L)
+{
+	L = toupper(L);
+	if (node->children[L - 41] != nullptr)
+	{
+		return node->children[L - 41];
+	}
+	return nullptr;
+}
+
 bool verifyGADDAG(struct Node* root, string filepath)
 {
 	string line;
@@ -102,8 +112,15 @@ bool verifyGADDAG(struct Node* root, string filepath)
 	return true;
 }
 
+void Gen(int pos, string word, char* rack, Node arc, char(*BoardRep)[BOARD_SIZE])
+{
 
+}
 
+void GoOn(int pos, char L, string word, char* rack, Node NewArc, Node OldArc)
+{
+
+}
 
 
 //reference a specific node from the children list tree[children[i]]

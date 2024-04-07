@@ -1,21 +1,20 @@
 #include <string>
 #include <random>
 #include <iostream>
+#include <fstream>
+#include <sstream>
 #include "Bag.h"
 using namespace std;
 
 
 Bag::Bag()
 {
-	size_ = 99; //always points to last element of array
-
-	
-	for (size_t i = 0; i < 9; i++) { arr_.push_back('A'); }
+	/*for (size_t i = 0; i < 9; i++) { arr_.push_back('A'); }
 	for (size_t i = 9; i < 11; i++) { arr_.push_back('B'); }
 	for (size_t i = 11; i < 13; i++) { arr_.push_back('C'); }
+	for (size_t i = 29; i < 31; i++) { arr_.push_back('F'); }
 	for (size_t i = 13; i < 17; i++) { arr_.push_back('D'); }
 	for (size_t i = 17; i < 29; i++) { arr_.push_back('E'); }
-	for (size_t i = 29; i < 31; i++) { arr_.push_back('F'); }
 	for (size_t i = 31; i < 34; i++) { arr_.push_back('G'); }
 	for (size_t i = 34; i < 36; i++) { arr_.push_back('H'); }
 	for (size_t i = 36; i < 45; i++) { arr_.push_back('I'); }
@@ -36,7 +35,19 @@ Bag::Bag()
 	arr_.push_back('X');
 	for (size_t i = 95; i < 97; i++) { arr_.push_back('Y'); }
 	arr_.push_back('Z');
-	for (size_t i = 98; i < 100; i++) { arr_.push_back('['); } // represents blank, used as it's ascii value is 91, one more than Z at 90.
+	for (size_t i = 98; i < 100; i++) { arr_.push_back('['); } // represents blank, used as it's ascii value is 91, one more than Z at 90.*/
+
+	ifstream file("Bag.txt");
+	string line;
+	int i = 0;
+	while (getline(file, line))
+	{
+		int num = stoi(line);
+		for (size_t i = 0; i < num; i++)
+		{
+			arr_.push_back(char(i+65));
+		}
+	}
 	 
 }
 
@@ -57,7 +68,7 @@ char* Bag::Pull(int i)
 	char copy;
 	for (size_t j = 0; j < i; j++)
 	{
-		rand = Random(size_);
+		rand = Random(arr_.size());
 		outputarr[j] = arr_[rand];
 		arr_.erase(arr_.begin() + rand); // erases letter at index rand
 		cout << arr_.size() << endl;
@@ -78,9 +89,4 @@ int Bag::Random(int i) //generates random number between 0 and i (inclusive of b
 	uniform_int_distribution<mt19937::result_type> random(0, i);
 	output = random(rng);
 	return output;
-}
-
-int Bag::getSize()
-{
-	return size_;
 }
