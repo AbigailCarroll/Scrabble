@@ -2,17 +2,31 @@
 #include <vector>
 using namespace std;
 
+class Node
+{
+public:
+
+	Node();
+
 	bool exportGADDAG(string filename); //writes tree to a data file 
 
-	void insert(struct Node* root, string word);
+	void insert(string word);
 
-	bool find(struct Node* root, string word);
+	bool find(string word);
 
-	Node* GenerateGADDAG(string filepath); //returns the root node/intitial state of the GADDAG
+	void GenerateGADDAG(string filepath); //returns the root node/intitial state of the GADDAG
 
-	bool verifyGADDAG(struct Node* root, string filepath);
+	bool verifyGADDAG(string filepath);
 
-	Node* findChild(Node* node, char L);
+	Node* findChild(char L);
+
+private:
+
+	Node* children[27];
+	bool terminal;
+};
+
+
 
 //each node represents a letter as part of a word in the GADDAG trie
 //nodes should be able to have children inserted dynamically to save on memory usage, otherwise each node (even terminal) would store space 

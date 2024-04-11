@@ -1,5 +1,6 @@
 #include "Tile.h"
 #include <utility>;
+#include <vector>;
 using namespace std;
 
 //class stores the tiles in a 1d array as an index between 0 and 224 as it is much easier to work with than a 2d array
@@ -51,6 +52,7 @@ public:
 
 	void Clear();
 
+	vector<unsigned char> getAnchors();
 
 private:
 	Tile tiles[225];

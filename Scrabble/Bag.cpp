@@ -7,7 +7,7 @@
 using namespace std;
 
 
-Bag::Bag()
+Bag::Bag(string filepath)
 {
 	/*for (size_t i = 0; i < 9; i++) { arr_.push_back('A'); }
 	for (size_t i = 9; i < 11; i++) { arr_.push_back('B'); }
@@ -37,7 +37,7 @@ Bag::Bag()
 	arr_.push_back('Z');
 	for (size_t i = 98; i < 100; i++) { arr_.push_back('['); } // represents blank, used as it's ascii value is 91, one more than Z at 90.*/
 
-	ifstream file("Bag.txt");
+	ifstream file(filepath);
 	string line;
 	int i = 0;
 	while (getline(file, line))
@@ -56,28 +56,32 @@ Bag::~Bag()
 	arr_.clear();
 }
 
-char* Bag::Pull(int i)
+vector<char> Bag::Pull(int i)
 {
 	if (arr_.size() < 7)
 	{
 		i = arr_.size();
 	}
-	char* outputarr = new char[i];
+	vector<char> output;
 	int rand;
 	mt19937 rng(time(NULL));
 	char copy;
 	for (size_t j = 0; j < i; j++)
 	{
-		rand = Random(arr_.size());
-		outputarr[j] = arr_[rand];
+		rand = Random(arr_.size()-1);
+		//cout << "Rand: " << rand << endl;
+		//cout << "arr_[rand]: " << arr_[rand] << endl;
+		output.push_back(arr_[rand]);
 		arr_.erase(arr_.begin() + rand); // erases letter at index rand
-		cout << arr_.size() << endl;
+		//cout << arr_.size() << endl;
 	}
+	cout << "Rack: ";
 	for (size_t j = 0; j < i; j++)
 	{
-		cout << outputarr[j] << endl;
+		cout << output[j] << ", ";
 	}
-	return outputarr;
+	cout << endl;
+	return output;
 }
 
 
