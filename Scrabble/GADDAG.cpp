@@ -39,7 +39,8 @@ void Node::insert(string word)
 	}
 	else
 	{
-		this->terminal = true;
+		//this->terminal = true;
+		children[reference]->terminal = true;
 	}
 }
 
@@ -56,7 +57,7 @@ bool Node::find(string word)
 		reference = word[0] - 'A';
 	}
 	//cout << reference << endl;
-	if (!children[reference])
+	if (children[reference] == nullptr)
 	{
 		return false;
 	}
@@ -65,7 +66,7 @@ bool Node::find(string word)
 	{
 		return children[reference]->find(word);
 	}
-	return terminal;
+	return children[reference]->terminal;
 
 }
 
@@ -88,11 +89,15 @@ void Node::GenerateGADDAG(string filepath)
 
 Node* Node::findChild(char L)
 {
-	L = toupper(L);
-	if (children[L - 41] != nullptr)
+	if (L == '+')
 	{
-		return children[L - 41];
+		return children[26];
 	}
+	if (L - 65 < 26)
+	{
+		return children[L - 65];
+	}
+	
 	return nullptr;
 }
 
@@ -111,6 +116,16 @@ bool Node::verifyGADDAG(string filepath)
 	}
 	cout << "GADDAG Verified" << endl;
 	return true;
+}
+
+Node* Node::getChild(unsigned char index) //accepts values 0-26
+{
+	return children[index];
+}
+
+bool Node::getTerminal()
+{
+	return terminal;
 }
 
 

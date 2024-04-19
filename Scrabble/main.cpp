@@ -189,6 +189,10 @@ int main()
                             }
                             else { cout << "Board not verified" << endl; }
                         }
+                        else if (x >= 600 && x < 900 && y > 1150 && y < 1250)
+                        {
+                            Game.GenerateMoves(1);
+                        }
 
 
                     }

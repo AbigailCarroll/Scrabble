@@ -291,5 +291,6 @@ bool Scrabble::GetWordsVertical(vector<char> rack, Node* node, unsigned char cur
 	if (node->getTerminal())
 	{
 		Valid_Vertical_Words.push_back(word);
+		cout << word << endl;
 	}
 }

@@ -1,9 +1,9 @@
 #include <string>
 #include <iostream>
+#include "CrossSet.h"
 #include "Bag.h"
 #include "Agent.h"
-#include "Board.h"
-#include "GADDAG.h"
+
 //#include "GADDAG.h"
 
 class Scrabble
@@ -38,12 +38,19 @@ public:
 
 	void BoardtoRack(int index, char* rack);
 
-	void Gen(int x, int y, int pos, string word, Node* arc);
+	void Gen(int x, int y, int pos, string word, Node* arc, char* rack);
 
-	void GoOn(int x, int y, int pos, string word, Node* NewArc, Node* OldArc);
+	void GoOn(int x, int y, int pos, string word, Node* NewArc, Node* OldArc, char* rack);
 
 	bool isEmpty(unsigned char x, unsigned char y);
 
+	bool isRackEmpty(char* rack);
+
+	vector<char> getValidLetters(char* rack, int x, int y);
+
+	void GenerateMoves(int playernum);
+
+	bool GetWordsVertical(vector<char> rack, Node* node, unsigned char index, unsigned char anchor, string word, unsigned char postJoin);
 
 private:
 
@@ -53,6 +60,8 @@ private:
 	Node* root;
 	Bag* TileBag;
 	Agent* Player[2];
+	CrossSet* cross_set;
+	vector<string> Valid_Vertical_Words;
 };
 
 

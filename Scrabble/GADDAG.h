@@ -20,6 +20,10 @@ public:
 
 	Node* findChild(char L);
 
+	Node* getChild(unsigned char index);
+
+	bool getTerminal();
+
 private:
 
 	Node* children[27];

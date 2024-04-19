@@ -22,6 +22,7 @@
     <ClCompile Include="Agent.cpp" />
     <ClCompile Include="Bag.cpp" />
     <ClCompile Include="Board.cpp" />
+    <ClCompile Include="CrossSet.cpp" />
     <ClCompile Include="GADDAG.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Scrabble.cpp" />
@@ -32,6 +33,7 @@
     <ClInclude Include="Bag.h" />
     <ClInclude Include="Board.h" />
     <ClInclude Include="Consts.h" />
+    <ClInclude Include="CrossSet.h" />
     <ClInclude Include="GADDAG.h" />
     <ClInclude Include="Scrabble.h" />
     <ClInclude Include="Tile.h" />
