@@ -38,7 +38,7 @@ bool Agent::RemoveFromRack(char letter)
 	{
 		if (rack[i] == letter)
 		{
-			rack[i] == '0';
+			rack[i] = '0';
 			return true;
 		}
 	}
@@ -51,10 +51,11 @@ void Agent::AddtoRack(char L)
 	{
 		if (rack[i] == '0')
 		{
-			rack[i] == L;
-			break;
+			rack[i] = L;
+			return;
 		}
 	}
+	cout << "ERROR: No free spaces on rack" << endl;
 }
 
 void Agent::AddtoRack(vector<char> L)
@@ -63,7 +64,6 @@ void Agent::AddtoRack(vector<char> L)
 	{
 		if (rack[i] == '0' && L.size() > 0)
 		{
-			cout << "placing letter " << L.back() << " in rack position " << i << endl;
 			rack[i] = L.back();
 			L.pop_back();
 		}
@@ -97,4 +97,9 @@ void Agent::AddPoints(int points_)
  bool Agent::getComputer()
  {
 	 return computer;
+ }
+
+ int Agent::getPoints()
+ {
+	 return points;
  }

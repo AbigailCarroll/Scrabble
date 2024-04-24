@@ -22,6 +22,7 @@ Tile::Tile(const Tile& other)
 	this->letter = other.letter;
 	this->wordBonus = other.wordBonus;
 	this->letterBonus = other.letterBonus;
+	this->blank = other.blank;
 }
 
 
@@ -32,6 +33,7 @@ Tile& Tile::operator=(const Tile& other)
 		this->letter = other.letter;
 		this->wordBonus = other.wordBonus;
 		this->letterBonus = other.letterBonus;
+		this->blank = other.blank;
 	}
 	return *this;
 }

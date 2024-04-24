@@ -56,6 +56,14 @@ bool Node::find(string word)
 	{
 		reference = word[0] - 'A';
 	}
+	if (reference < 0 || reference > 26)
+	{
+		//cout << endl;
+		//cout << "ERROR: REFERENCE PROVIDED FOR NODE->FIND OUTSIDE BOUNDS OF ARRAY" << endl;
+		//cout << "REFERENCE: " << reference << endl;
+		//cout << endl;
+		return false;
+	}
 	//cout << reference << endl;
 	if (children[reference] == nullptr)
 	{
@@ -89,11 +97,16 @@ void Node::GenerateGADDAG(string filepath)
 
 Node* Node::findChild(char L)
 {
+	if ((L-'A' > 26 || L-'A' < 0) && L != '+')
+	{
+		//cout << "ERROR: CHAR L OUTSIDE BOUNDS OF ARRAY AT: " << L <<"/"<< int(L)<< "/" << int(L-'A') << endl;
+		return nullptr;
+	}
 	if (L == '+')
 	{
 		return children[26];
 	}
-	if (L - 65 < 26)
+	else if (L - 65 < 26)
 	{
 		return children[L - 65];
 	}

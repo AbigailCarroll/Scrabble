@@ -1,4 +1,5 @@
 #include "Board.h"
+#include <iostream>
 using namespace std;
 
 Board::Board()
@@ -93,6 +94,10 @@ Tile* Board::getTile(unsigned char x, unsigned char y)
 
 char Board::getLetter(unsigned char index)
 {
+	if (index > 225 || index < 0)
+	{
+		//cout << "ERROR: TILE INDEX OUTSIDE BOUNDS OF ARRAY AT: " << int(index) << endl;
+	}
 	return tiles[index].getLetter();
 }
 

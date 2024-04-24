@@ -12,7 +12,11 @@ public:
 
 	vector<char> Pull(int i); //recieves number of tiles to take from bag, returns pointer to array of those tiles.
 
+	char Pull();
+
 	char* Replace(int* i); //recieves array to place back in bag, returns a new array of tiles that are taken out.
+
+	bool isBagEmpty();
 
 private:
 

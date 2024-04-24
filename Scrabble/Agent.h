@@ -26,6 +26,8 @@ public:
 
 	bool getComputer();
 
+	int getPoints();
+
 private:
 	char rack[7];
 	int points;

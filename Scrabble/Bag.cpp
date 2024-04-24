@@ -43,10 +43,11 @@ Bag::Bag(string filepath)
 	while (getline(file, line))
 	{
 		int num = stoi(line);
-		for (size_t i = 0; i < num; i++)
+		for (size_t j = 0; j < num; j++)
 		{
 			arr_.push_back(char(i+65));
 		}
+		i++;
 	}
 	 
 }
@@ -54,6 +55,22 @@ Bag::Bag(string filepath)
 Bag::~Bag()
 {
 	arr_.clear();
+}
+
+char Bag::Pull()
+{
+	if (arr_.size() < 1)
+	{
+		cout << "ERROR: Bag is empty" << endl;
+		return '0';
+	}
+	int rand;
+	mt19937 rng(time(NULL));
+	char output;
+	rand = Random(arr_.size() - 1);
+	output = arr_[rand];
+	arr_.erase(arr_.begin() + rand);
+	return output;
 }
 
 vector<char> Bag::Pull(int i)
@@ -94,3 +111,13 @@ int Bag::Random(int i) //generates random number between 0 and i (inclusive of b
 	output = random(rng);
 	return output;
 }
+
+bool Bag::isBagEmpty()
+{
+	if (arr_.size() == 0)
+	{
+		return true;
+	}
+	return false;
+}
+

@@ -52,11 +52,11 @@ void DrawRack(char* rack, Sprite** TileSprite, sf::RenderWindow& window)
             TileSprite[x]->setPosition(TILE_SIZE * 16, (i * TILE_SIZE) + 5);
             window.draw(*TileSprite[x]);
         }
-        else
+        /*else
         {
             TileSprite[26]->setPosition(TILE_SIZE * 16, (i * TILE_SIZE) + 5);
             window.draw(*TileSprite[26]);
-        }
+        }*/
     }
 }
 
@@ -134,6 +134,27 @@ int main()
     generate_button.setScale(1, 1);
     generate_button.setPosition(600, 1150);
 
+    sf::Font font;
+    if (!font.loadFromFile("arial.ttf"))
+    {
+        cout << "Error: font file unable to load" << endl;
+    }
+    Text player1Points;
+    player1Points.setFont(font);
+    player1Points.setString("Player 2 Points: 0");
+    player1Points.setCharacterSize(48);
+    player1Points.setFillColor(sf::Color::Black);
+    player1Points.setPosition(100, 1150);
+
+    Text player0Points;
+    player0Points.setFont(font);
+    player0Points.setString("Player 1 Points: 0");
+    player0Points.setCharacterSize(48);
+    player0Points.setFillColor(sf::Color::Black);
+    player0Points.setPosition(100, 1200);
+    
+
+    
 
     //char BoardRep[BOARD_SIZE][BOARD_SIZE]; //representation of board in char array form
     //char toVerify[BOARD_SIZE][BOARD_SIZE]; //array to place tiles on before they are verified, is later copied into the BoardRep 
@@ -150,8 +171,9 @@ int main()
         }
     }*/
 
-    while (window.isOpen())
+    while (window.isOpen() && !Game.isOver())
     {
+       
         if (!Game.getAgent(0)->getComputer())
         {
             sf::Event event;
@@ -183,14 +205,17 @@ int main()
                         }
                         else if (x > 900 && x < 1200 && y > 1150 && y < 1250) //if submit button is clicked
                         {
-                            if (Game.VerifyBoard())
+                            if (Game.VerifyBoard(0))
                             {
                                 cout << "Board verified" << endl;
+                                Game.FillRack(0);
+                                Game.GenerateMoves(1);
                             }
                             else { cout << "Board not verified" << endl; }
                         }
                         else if (x >= 600 && x < 900 && y > 1150 && y < 1250)
                         {
+                            Game.GenerateMoves(0);
                             Game.GenerateMoves(1);
                         }
 
@@ -204,8 +229,7 @@ int main()
             }
         }
 
-
-
+      
 
         window.clear();
         window.draw(background);
@@ -216,13 +240,17 @@ int main()
         DrawRack(Game.getAgent(0)->getRack(), TileSprite, window);
         window.draw(submit_button);
         window.draw(generate_button);
+        player1Points.setString("Player 2 Points: " + to_string(Game.getPoints(1)));
+        player0Points.setString("Player 1 Points: " + to_string(Game.getPoints(0)));
 
-
+        window.draw(player0Points);
+        window.draw(player1Points);
         window.display();
         
         
             
     }
+    system("pause");
 
     delete[] TileSprite;
     delete[] TileTexture;
