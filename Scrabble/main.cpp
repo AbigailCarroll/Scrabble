@@ -135,7 +135,7 @@ int main()
     generate_button.setPosition(600, 1150);
 
     sf::Font font;
-    if (!font.loadFromFile("arial.ttf"))
+    if (!font.loadFromFile("Arial/arial.ttf"))
     {
         cout << "Error: font file unable to load" << endl;
     }

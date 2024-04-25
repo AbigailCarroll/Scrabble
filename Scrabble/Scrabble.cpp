@@ -187,6 +187,10 @@ int Scrabble::getPoints(Board* Store)
 		currentSpace += direction;
 	}
 	points = points * multiplier;
+	if (toVerify_Vector.size() == 7)
+	{
+		points += 50;
+	}
 	return points;
 }
 
