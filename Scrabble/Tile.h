@@ -24,6 +24,8 @@ public:
 
 	void setBlank(bool B);
 
+	void setPlaced();
+
 
 private:
 

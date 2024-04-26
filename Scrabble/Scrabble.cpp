@@ -165,10 +165,11 @@ int Scrabble::getPoints(Board* Store)
 			if (get<0>(toVerify_Vector[i]) == currentSpace)
 			{
 				letterMultiplier = letterMultiplier * Store->getLetterBonus(currentSpace);
+				multiplier = multiplier * Store->getWordBonus(currentSpace);
+				break;
 			}
 		}
 		points += point_value[Store->getLetter(currentSpace) - 'A'] * letterMultiplier;
-		multiplier = multiplier * Store->getWordBonus(currentSpace);
 		currentSpace -= direction;
 	}
 	currentSpace = get<0>(toVerify_Vector[0]) + direction;
@@ -180,13 +181,18 @@ int Scrabble::getPoints(Board* Store)
 			if (get<0>(toVerify_Vector[i]) == currentSpace)
 			{
 				letterMultiplier = letterMultiplier * Store->getLetterBonus(currentSpace);
+				multiplier = multiplier * Store->getWordBonus(currentSpace);
+				break;
 			}
 		}
 		points += point_value[Store->getLetter(currentSpace) - 'A'] * letterMultiplier;
-		multiplier = multiplier * Store->getWordBonus(currentSpace);
 		currentSpace += direction;
 	}
 	points = points * multiplier;
+	if (toVerify_Vector.size() == 7)
+	{
+		points += 50;
+	}
 	return points;
 }
 
@@ -265,15 +271,20 @@ bool Scrabble::VerifyBoard(int playernum)
 			}
 		}
 	}// board has been verified, cleanup step
+	
 	int points = getPoints(&Store);
 	Player[playernum]->AddPoints(points);
 	*BoardRep = Store;
-	ToVerify->Clear();
-	toVerify_Vector.clear();
 	if (firstTurn)
 	{
 		firstTurn = false;
 	}
+	for (size_t i = 0; i < toVerify_Vector.size(); i++)
+	{
+		BoardRep->getTile(get<0>(toVerify_Vector[i]))->setPlaced();
+	}
+	ToVerify->Clear();
+	toVerify_Vector.clear();
 	return true;
 }
 
@@ -289,11 +300,6 @@ bool Scrabble::isRackEmpty(char* rack)
 	return true;
 }
 
-vector<char> Scrabble::getValidLetters(char* rack, int x, int y)
-{
-	vector<char> output;
-
-}
 
 void Scrabble::GenerateMoves(int playernum)
 {
@@ -398,7 +404,7 @@ bool Scrabble::GetWordsVertical(vector<char> rack, Node* node, unsigned char cur
 			{
 				GetWordsVertical(new_rack, node->findChild(store), currentSpace - (15 * postJoin), anchor, word + store, postJoin, (points + getPointValue(store, currentSpace - 15 * postJoin)), multiplier * BoardRep->getWordBonus(currentSpace - 15 * postJoin), rack_size);
 			}
-			else if (store == '[') //if there is a black tile on the rack
+			else if (store == '[') //if there is a blank tile on the rack
 			{
 				for (size_t i = 0; i < 26; i++)
 				{

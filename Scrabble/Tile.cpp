@@ -68,3 +68,9 @@ void Tile::setBlank(bool B)
 	this->blank = B;
 }
 
+void Tile::setPlaced()
+{
+	this->letterBonus = 1;
+	this->wordBonus = 1;
+}
+

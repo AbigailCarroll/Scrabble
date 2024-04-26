@@ -52,8 +52,6 @@ public:
 
 	void Clear();
 
-	vector<unsigned char> getAnchors();
-
 private:
 	Tile tiles[225];
 

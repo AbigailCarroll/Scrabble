@@ -176,18 +176,6 @@ void Board::Clear()
 	}
 }
 
-vector<unsigned char> Board::getAnchors()
-{
-	vector<unsigned char> output;
-	for (size_t i = 0; i < 225; i++)
-	{
-		if (tiles[i].getLetter() != '0')
-		{
-			output.push_back(i);
-		}
-	}
-}
-
 /*void Board::BonusTiles(unsigned char* arr, int length, unsigned char letterBonus, unsigned char wordBonus)
 {
 	Tile tile(letterBonus, wordBonus);
