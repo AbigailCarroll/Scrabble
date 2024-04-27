@@ -188,6 +188,34 @@ int Scrabble::getPoints(Board* Store)
 		points += point_value[Store->getLetter(currentSpace) - 'A'] * letterMultiplier;
 		currentSpace += direction;
 	}
+	if (direction == 1) { direction = 15; }
+	else { direction = 1; }
+	for (size_t i = 0; i < toVerify_Vector.size(); i++) //checks for 2 letter words formed by two longer words placed adjacent
+	{
+		currentSpace = get<0>(toVerify_Vector[i]);
+		int new_multiplier = Store->getWordBonus(currentSpace);
+		int addPoints = point_value[get<1>(toVerify_Vector[i]) - 'A'] * Store->getLetterBonus(currentSpace);
+		string word;
+		word.push_back(get<1>(toVerify_Vector[i]));
+		currentSpace -= direction;
+		while (Store->getLetter(currentSpace) != '0')
+		{
+			word.push_back(Store->getLetter(currentSpace));
+			addPoints += point_value[Store->getLetter(currentSpace) - 'A'];
+			currentSpace -= direction;
+		}
+		currentSpace = get<0>(toVerify_Vector[i]) + direction;
+		while (Store->getLetter(currentSpace) != '0')
+		{
+			word.push_back(Store->getLetter(currentSpace));
+			addPoints += point_value[Store->getLetter(currentSpace) - 'A'];
+			currentSpace -= direction;
+		}
+		if (word.length() > 1)
+		{
+			points += (addPoints * new_multiplier);
+		}
+	}
 	points = points * multiplier;
 	if (toVerify_Vector.size() == 7)
 	{
