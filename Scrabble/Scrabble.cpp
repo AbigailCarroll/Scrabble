@@ -262,9 +262,13 @@ bool Scrabble::VerifyBoard(int playernum)
 			cout << "What letter should the blank tile be?";
 			char blank;
 			cin >> blank;
+			blank = toupper(blank);
 			Store.PlaceTile(get<0>(toVerify_Vector[i]), blank, true);
 		}
-		Store.PlaceTile(get<0>(toVerify_Vector[i]), get<1>(toVerify_Vector[i]), ToVerify->getBlank(get<0>(toVerify_Vector[i])));
+		else
+		{
+			Store.PlaceTile(get<0>(toVerify_Vector[i]), get<1>(toVerify_Vector[i]), ToVerify->getBlank(get<0>(toVerify_Vector[i])));
+		}
 	}
 	if (firstTurn && Store.getLetter(112) == '0')
 	{
