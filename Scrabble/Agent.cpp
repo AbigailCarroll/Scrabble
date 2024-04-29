@@ -103,3 +103,8 @@ void Agent::AddPoints(int points_)
  {
 	 return points;
  }
+
+ void Agent::setPoints(int points_)
+ {
+	 this->points = points_;
+ }

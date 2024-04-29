@@ -113,28 +113,28 @@ int main()
     }
 
     boardTexture.setSmooth(true);
-    sf::Sprite board;
+    Sprite board;
     board.setTexture(boardTexture);
     board.setScale(1.5, 1.5);
-    sf::RectangleShape background;
+    RectangleShape background;
     background.setSize(sf::Vector2f(1304, 1304));
 
 
     Texture SubmitButtonTexture;
     SubmitButtonTexture.loadFromFile("Submit.png");
-    sf::Sprite submit_button;
+    Sprite submit_button;
     submit_button.setTexture(SubmitButtonTexture);
     submit_button.setScale(1, 1);
     submit_button.setPosition(900, 1150);
 
     Texture GenerateButtonTexture;
     GenerateButtonTexture.loadFromFile("Generate.png");
-    sf::Sprite generate_button;
+    Sprite generate_button;
     generate_button.setTexture(GenerateButtonTexture);
     generate_button.setScale(1, 1);
     generate_button.setPosition(600, 1150);
 
-    sf::Font font;
+    Font font;
     if (!font.loadFromFile("Arial/arial.ttf"))
     {
         cout << "Error: font file unable to load" << endl;
@@ -144,14 +144,14 @@ int main()
     player1Points.setString("Player 2 Points: 0");
     player1Points.setCharacterSize(48);
     player1Points.setFillColor(sf::Color::Black);
-    player1Points.setPosition(100, 1150);
+    player1Points.setPosition(10, 1150);
 
     Text player0Points;
     player0Points.setFont(font);
     player0Points.setString("Player 1 Points: 0");
     player0Points.setCharacterSize(48);
     player0Points.setFillColor(sf::Color::Black);
-    player0Points.setPosition(100, 1200);
+    player0Points.setPosition(10, 1200);
     
 
     
@@ -171,7 +171,7 @@ int main()
         }
     }*/
 
-    while (window.isOpen() && !Game.isOver())
+    while (window.isOpen())
     {
        
         if (!Game.getAgent(0)->getComputer())
@@ -182,7 +182,7 @@ int main()
                 if (event.type == sf::Event::Closed)
                     window.close();
 
-                if (event.type == sf::Event::MouseButtonPressed)
+                if (event.type == sf::Event::MouseButtonPressed && !Game.isOver())
                 {
                     int x = Mouse::getPosition(window).x;
                     int y = Mouse::getPosition(window).y;
@@ -215,6 +215,7 @@ int main()
                         }
                         else if (x >= 600 && x < 900 && y > 1150 && y < 1250)
                         {
+                            Game.ALLBoardtoRack(Game.getAgent(0)->getRack());
                             Game.GenerateMoves(0);
                             Game.GenerateMoves(1);
                         }
@@ -224,6 +225,7 @@ int main()
                     if (event.mouseButton.button == sf::Mouse::Right)
                     {
                         Game.BoardtoRack((Tiley * 15 + Tilex), Game.getAgent(0)->getRack());
+                        
                     }
                 }
             }
@@ -242,15 +244,26 @@ int main()
         window.draw(generate_button);
         player1Points.setString("Player 2 Points: " + to_string(Game.getPoints(1)));
         player0Points.setString("Player 1 Points: " + to_string(Game.getPoints(0)));
+        if (Game.isOver())
+        {
+            if (Game.getAgent(0)->getPoints() > Game.getAgent(1)->getPoints())
+            {
+                player0Points.setString("Player 1 Points: " + to_string(Game.getPoints(0)) + " WINNER!");
+            }
+            else
+            {
+                player1Points.setString("Player 2 Points: " + to_string(Game.getPoints(1)) + " WINNER!");
+            }
+        }
+
 
         window.draw(player0Points);
         window.draw(player1Points);
         window.display();
-        
+       
         
             
     }
-    system("pause");
 
     delete[] TileSprite;
     delete[] TileTexture;

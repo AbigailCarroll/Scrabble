@@ -27,9 +27,8 @@ void Node::insert(string word)
 	{
 		reference = word[0] - 'A';
 	}
-	if (children[reference] == nullptr)
+	if (children[reference] == nullptr) //if no child node currently exists
 	{
-		//cout << "adding node with reference " << reference << endl;
 		children[reference] = new Node();
 	}
 	word = word.substr(1);

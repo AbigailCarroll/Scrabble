@@ -154,7 +154,14 @@ void Board::ReplaceTile(unsigned char index, char* rack)
 	{	
 		if (rack[i] == '0')
 		{
-			rack[i] = this->getLetter(index);
+			if (getBlank(index))
+			{
+				rack[i] = '[';
+			}
+			else
+			{
+				rack[i] = this->getLetter(index);
+			}
 			break;
 		}
 	}
@@ -174,6 +181,11 @@ void Board::Clear()
 		tiles[i].setLetter('0');
 		tiles[i].setBlank(false);
 	}
+}
+
+bool Board::getBlank(int index)
+{
+	return tiles[index].isBlank();
 }
 
 /*void Board::BonusTiles(unsigned char* arr, int length, unsigned char letterBonus, unsigned char wordBonus)

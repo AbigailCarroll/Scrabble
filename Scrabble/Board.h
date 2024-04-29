@@ -52,6 +52,8 @@ public:
 
 	void Clear();
 
+	bool getBlank(int index);
+
 private:
 	Tile tiles[225];
 

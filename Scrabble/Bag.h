@@ -14,7 +14,7 @@ public:
 
 	char Pull();
 
-	char* Replace(int* i); //recieves array to place back in bag, returns a new array of tiles that are taken out.
+	vector<char> Replace(); //recieves array to place back in bag, returns a new array of tiles that are taken out.
 
 	bool isBagEmpty();
 

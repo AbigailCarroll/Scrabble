@@ -40,10 +40,6 @@ public:
 
 	void ALLBoardtoRack(char* rack);
 
-	void Gen(int x, int y, int pos, string word, Node* arc, char* rack);
-
-	void GoOn(int x, int y, int pos, string word, Node* NewArc, Node* OldArc, char* rack);
-
 	bool isEmpty(unsigned char x, unsigned char y);
 
 	bool isRackEmpty(char* rack);
@@ -69,6 +65,8 @@ public:
 	bool isOver();
 
 	int getPoints(Board* Store);
+
+	void GameOver();
 
 private:
 

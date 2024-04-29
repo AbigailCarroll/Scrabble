@@ -28,9 +28,9 @@ Scrabble::Scrabble(bool playerOneComp, bool playerTwoComp, string bagFilepath)
 	TileBag = new Bag(bagFilepath);
 	Player[0] = new Agent(playerOneComp);
 	Player[1] = new Agent(playerTwoComp);
-	Player[0]->AddtoRack(TileBag->Pull(7));
+	//Player[0]->AddtoRack(TileBag->Pull(7));
 	Player[1]->AddtoRack(TileBag->Pull(7));
-	//Player[0]->AddtoRack({ 'C', 'A', 'T', 'B', 'A', 'G', 'S' }); //for testing
+	Player[0]->AddtoRack({ '[', 'A', 'T', 'B', 'A', 'G', 'S' }); //for testing
 	//Player[1]->AddtoRack({ 'C', 'A', 'T', 'B', 'A', 'G', 'S' }); //for testing
 	firstTurn = true;
 	isOver_ = false;
@@ -169,7 +169,10 @@ int Scrabble::getPoints(Board* Store)
 				break;
 			}
 		}
-		points += point_value[Store->getLetter(currentSpace) - 'A'] * letterMultiplier;
+		if (!Store->getBlank(currentSpace))
+		{
+			points += point_value[Store->getLetter(currentSpace) - 'A'] * letterMultiplier;
+		}
 		currentSpace -= direction;
 	}
 	currentSpace = get<0>(toVerify_Vector[0]) + direction;
@@ -185,7 +188,10 @@ int Scrabble::getPoints(Board* Store)
 				break;
 			}
 		}
-		points += point_value[Store->getLetter(currentSpace) - 'A'] * letterMultiplier;
+		if (!Store->getBlank(currentSpace))
+		{
+			points += point_value[Store->getLetter(currentSpace) - 'A'] * letterMultiplier;
+		}
 		currentSpace += direction;
 	}
 	if (direction == 1) { direction = 15; }
@@ -258,7 +264,7 @@ bool Scrabble::VerifyBoard(int playernum)
 			cin >> blank;
 			Store.PlaceTile(get<0>(toVerify_Vector[i]), blank, true);
 		}
-		Store.PlaceTile(get<0>(toVerify_Vector[i]), get<1>(toVerify_Vector[i]), false);
+		Store.PlaceTile(get<0>(toVerify_Vector[i]), get<1>(toVerify_Vector[i]), ToVerify->getBlank(get<0>(toVerify_Vector[i])));
 	}
 	if (firstTurn && Store.getLetter(112) == '0')
 	{
@@ -356,7 +362,7 @@ void Scrabble::GenerateMoves(int playernum)
 				{
 					L = char(i + 65);
 					word.push_back(L);
-					GetWordsHorizontal(new_rack, root->findChild(L), 112, 112, word, 1, getPointValue(L, 112), 2, new_rack.size());
+					GetWordsHorizontal(new_rack, root->findChild(L), 112, 112, word, 1, 0, 2, new_rack.size());
 					word.pop_back();
 				}
 			}
@@ -580,7 +586,6 @@ void Scrabble::PlayBestMove(int playernum)
 			cout << "ERROR: SQUARE OUTSIDE BOUNDS OF ARRAY IN PLAYBESTMOVE() AT: " << square << endl;
 			break;
 		}
-		bool useblank = true;
 		if (word[i] == '+')
 		{
 			postjoin = -1;
@@ -589,18 +594,15 @@ void Scrabble::PlayBestMove(int playernum)
 		}
 		else if(BoardRep->getLetter(square) == '0')
 		{
-			for (size_t j = 0; j < 7; j++)
+			
+			if (Player[playernum]->RemoveFromRack(word[i]))
 			{
-				if (Player[playernum]->RemoveFromRack(word[i]))
-				{
-					ToVerify->PlaceTile(square, word[i], false);
-					toVerify_Vector.push_back(make_tuple(square, word[i]));
-					square -= H_or_V * postjoin;
-					useblank = false;
-					break;
-				}
+				ToVerify->PlaceTile(square, word[i], false);
+				toVerify_Vector.push_back(make_tuple(square, word[i]));
+				square -= H_or_V * postjoin;
 			}
-			if (ToVerify->getLetter(square) == '0' && Player[playernum]->RemoveFromRack('[') && useblank)
+			
+			else if (ToVerify->getLetter(square) == '0' && Player[playernum]->RemoveFromRack('['))
 			{
 				cout << "Placed a blank as " << word[i] << endl;
 				ToVerify->PlaceTile(square, word[i], true);
@@ -625,7 +627,7 @@ void Scrabble::PlayBestMove(int playernum)
 		//Player[playernum]->AddPoints(get<2>(highest_points));
 		if (isRackEmpty(Player[playernum]->getRack()) && TileBag->isBagEmpty())
 		{
-			isOver_ = true;
+			GameOver();
 		}
 	}
 	else
@@ -688,4 +690,19 @@ int Scrabble::getPoints(int playernum)
 bool Scrabble::isOver()
 {
 	return isOver_;
+}
+
+void Scrabble::GameOver()
+{
+	isOver_ = true;
+	for (size_t i = 0; i < 7; i++)
+	{
+		for (size_t j = 0; j < 2; j++)
+		{
+			if (Player[j]->getRack()[i] != '0')
+			{
+				Player[j]->setPoints(Player[j]->getPoints() - point_value[Player[j]->getRack()[i] - 'A']);
+			}
+		}
+	}
 }

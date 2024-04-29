@@ -28,6 +28,8 @@ public:
 
 	int getPoints();
 
+	void setPoints(int points_);
+
 private:
 	char rack[7];
 	int points;
