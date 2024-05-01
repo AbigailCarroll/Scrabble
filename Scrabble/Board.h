@@ -1,6 +1,8 @@
 #include "Tile.h"
+#include "GADDAG.h"
 #include <utility>;
 #include <vector>;
+#include <set>
 using namespace std;
 
 //class stores the tiles in a 1d array as an index between 0 and 224 as it is much easier to work with than a 2d array
@@ -54,7 +56,16 @@ public:
 
 	bool getBlank(int index);
 
+	set<int> getAnchors();
+
+	bool* getValidLetters(int index);
+
+	void UpdateCrossSets(Node* root);
+
+	void UpdateAnchors();
+
 private:
 	Tile tiles[225];
-
+	bool crossSet[225][26];
+	set<int> anchors;
 };

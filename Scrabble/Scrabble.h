@@ -4,7 +4,6 @@
 #include "Bag.h"
 #include "Agent.h"
 #include "Board.h"
-#include "GADDAG.h"
 
 class Scrabble
 {

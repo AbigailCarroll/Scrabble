@@ -28,9 +28,9 @@ Scrabble::Scrabble(bool playerOneComp, bool playerTwoComp, string bagFilepath)
 	TileBag = new Bag(bagFilepath);
 	Player[0] = new Agent(playerOneComp);
 	Player[1] = new Agent(playerTwoComp);
-	//Player[0]->AddtoRack(TileBag->Pull(7));
+	Player[0]->AddtoRack(TileBag->Pull(7));
 	Player[1]->AddtoRack(TileBag->Pull(7));
-	Player[0]->AddtoRack({ '[', 'A', 'T', 'B', 'A', 'G', 'S' }); //for testing
+	//Player[0]->AddtoRack({ '[', 'A', 'T', 'B', 'A', 'G', 'S' }); //for testing
 	//Player[1]->AddtoRack({ 'C', 'A', 'T', 'B', 'A', 'G', 'S' }); //for testing
 	firstTurn = true;
 	isOver_ = false;
@@ -235,8 +235,13 @@ string Scrabble::getWord(Board* Store, int direction, unsigned char x, unsigned 
 {
 	string word = "";
 	int targetX = x, targetY = y;
+	bool connected = firstTurn;
 	while (Store->getLetter(targetX, targetY) != '0') //gets all letters to the left and top of the target tile.
 	{
+		if (ToVerify->getLetter(targetX, targetY) == '0')
+		{
+			connected = true;
+		}
 		word = Store->getLetter(targetX, targetY) + word;
 		targetX = targetX - 1 + direction;
 		targetY = targetY - direction;
@@ -245,9 +250,17 @@ string Scrabble::getWord(Board* Store, int direction, unsigned char x, unsigned 
 	targetY = y + direction;
 	while (Store->getLetter(targetX, targetY) != '0') //gets all letters to the right and below the target tile.
 	{
+		if (ToVerify->getLetter(targetX, targetY) == '0')
+		{
+			connected = true;
+		}
 		word = word + Store->getLetter(targetX, targetY);
 		targetX = targetX + 1 - direction;
 		targetY = targetY + direction;
+	}
+	if (!connected)
+	{
+		return "";
 	}
 	return word;
 }
@@ -270,10 +283,18 @@ bool Scrabble::VerifyBoard(int playernum)
 			Store.PlaceTile(get<0>(toVerify_Vector[i]), get<1>(toVerify_Vector[i]), ToVerify->getBlank(get<0>(toVerify_Vector[i])));
 		}
 	}
-	if (firstTurn && Store.getLetter(112) == '0')
+	if (firstTurn)
 	{
-		cout << "First word not placed on centre tile" << endl;
-		return false;
+		if (Store.getLetter(112) == '0')
+		{
+			cout << "First word not placed on centre tile" << endl;
+			return false;
+		}
+		if (toVerify_Vector.size() < 2)
+		{
+			cout << "First word cannot be one letter long" << endl;
+			return false;
+		}
 	}
 	bool xLine = true;
 	bool yLine = true;
@@ -297,6 +318,17 @@ bool Scrabble::VerifyBoard(int playernum)
 		vector<string> words;
 		words.push_back(getWord(&Store, 0, get<0>(toVerify_Vector[i]) % 15, get<0>(toVerify_Vector[i]) / 15 )); //checks left/right
 		words.push_back(getWord(&Store, 1, get<0>(toVerify_Vector[i]) % 15, get<0>(toVerify_Vector[i]) / 15));  //checks up/down
+		
+		if (words[0].length() == 0 && words[1].length() == 0)
+		{
+			cout << "Board not verified: Solo word" << endl;
+			return false;
+		}
+		if (words[0].length() == 1 && words[1].length() == 1)
+		{
+			cout << "Board not verified: Solo Letter" << endl;
+			return false;
+		}
 		for (size_t j = 0; j < words.size(); j++)
 		{
 			if (words[j].length() > 1)

@@ -60,29 +60,6 @@ void DrawRack(char* rack, Sprite** TileSprite, sf::RenderWindow& window)
     }
 }
 
-
-
-
-void DisplayBoard(char(*Board)[BOARD_SIZE], vector<tuple<int, int, char>> toVerify_Vector, string message) //displays the content of the board as text in the console.
-{
-    for (size_t i = 0; i < BOARD_SIZE; i++)
-    {
-        for (size_t j = 0; j < BOARD_SIZE; j++)
-        {
-            cout << Board[j][i] << ", ";
-        }
-        cout << endl;
-    }
-    for (size_t i = 0; i < toVerify_Vector.size(); i++)
-    {
-        cout << get<0>(toVerify_Vector[i]) << ", " << get<1>(toVerify_Vector[i]) << ": " << get<2>(toVerify_Vector[i]) << endl;
-    }
-    cout << message << endl;
-}
-
-
-
-
 int main()
 {
     Scrabble Game(false, true, "Bag.txt");

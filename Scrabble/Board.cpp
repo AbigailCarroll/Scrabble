@@ -41,6 +41,11 @@ Board::Board()
 			tiles[Tiles[i]] = doubleLetterTile;
 		}
 	}
+	for (size_t i = 0; i < 225; i++)
+	{
+		crossSet[i] == nullptr;
+	}
+	anchors.insert(112);
 }
 
 Board::Board(const Board& other)
@@ -186,6 +191,54 @@ void Board::Clear()
 bool Board::getBlank(int index)
 {
 	return tiles[index].isBlank();
+}
+
+set<int> Board::getAnchors()
+{
+	return anchors;
+}
+
+bool* Board::getValidLetters(int index)
+{
+	return crossSet[index];
+}
+
+
+void Board::UpdateCrossSets(Node* root)
+{
+	
+}
+
+void Board::UpdateAnchors()
+{
+	anchors.clear();
+	for (size_t i = 1; i < 14; i++)
+	{
+		for (size_t j = 1; j < 14; j++)
+		{
+			if (getLetter(i, j) != '0')
+			{
+				anchors.insert(getIndex(i, j));
+				if (i < 14)
+				{
+					anchors.insert(getIndex(i + 1, j));
+				}
+				if (i > 0)
+				{
+					anchors.insert(getIndex(i - 1, j));
+				}
+				if (j < 14)
+				{
+					anchors.insert(getIndex(i, j + 1));
+				}
+				if (j > 0)
+				{
+					anchors.insert(getIndex(i, j - 1));
+				}
+			}
+		}
+	}
+	
 }
 
 /*void Board::BonusTiles(unsigned char* arr, int length, unsigned char letterBonus, unsigned char wordBonus)
