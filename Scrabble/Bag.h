@@ -14,7 +14,7 @@ public:
 
 	char Pull();
 
-	vector<char> Replace(); //recieves array to place back in bag, returns a new array of tiles that are taken out.
+	vector<char> Replace(vector<char> tiles); //recieves array to place back in bag, returns a new array of tiles that are taken out.
 
 	bool isBagEmpty();
 

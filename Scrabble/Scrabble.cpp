@@ -1,6 +1,7 @@
-#include <string>
+#include <chrono>
 #include "Scrabble.h"
 using namespace std;
+using namespace std::chrono;
 
 Scrabble::Scrabble()
 {
@@ -231,6 +232,8 @@ int Scrabble::getPoints(Board* Store)
 }
 
 
+
+
 string Scrabble::getWord(Board* Store, int direction, unsigned char x, unsigned char y)
 {
 	string word = "";
@@ -238,7 +241,7 @@ string Scrabble::getWord(Board* Store, int direction, unsigned char x, unsigned 
 	bool connected = firstTurn;
 	while (Store->getLetter(targetX, targetY) != '0') //gets all letters to the left and top of the target tile.
 	{
-		if (ToVerify->getLetter(targetX, targetY) == '0')
+		if (ToVerify->getLetter(targetX, targetY) == '0' || BoardRep->hasAdjacent(targetX, targetY))
 		{
 			connected = true;
 		}
@@ -250,7 +253,7 @@ string Scrabble::getWord(Board* Store, int direction, unsigned char x, unsigned 
 	targetY = y + direction;
 	while (Store->getLetter(targetX, targetY) != '0') //gets all letters to the right and below the target tile.
 	{
-		if (ToVerify->getLetter(targetX, targetY) == '0')
+		if (ToVerify->getLetter(targetX, targetY) == '0' || BoardRep->hasAdjacent(targetX, targetY))
 		{
 			connected = true;
 		}
@@ -336,6 +339,7 @@ bool Scrabble::VerifyBoard(int playernum)
 				reverse(words[j].begin(), words[j].end());
 				if (!root->find(words[j]))
 				{
+					//cout << words[j] << " is an invalid word" << endl;
 					return false;
 				}
 			}
@@ -355,6 +359,8 @@ bool Scrabble::VerifyBoard(int playernum)
 	}
 	ToVerify->Clear();
 	toVerify_Vector.clear();
+	BoardRep->UpdateAnchors();
+	BoardRep->UpdateCrossSets(root);
 	return true;
 }
 
@@ -374,6 +380,7 @@ bool Scrabble::isRackEmpty(char* rack)
 void Scrabble::GenerateMoves(int playernum)
 {
 	cout << "Starting move generation" << endl;
+	auto start = high_resolution_clock::now();
 	vector<char> rack_vector;
 	for (size_t j = 0; j < 7; j++)
 	{
@@ -382,8 +389,8 @@ void Scrabble::GenerateMoves(int playernum)
 			rack_vector.push_back(Player[playernum]->getRack()[j]);
 		}
 	}
-	cout << "Rack Size: " << rack_vector.size() << endl;
-	cout << "Rack: " << Player[playernum]->getRack() << endl;
+	//cout << "Rack Size: " << rack_vector.size() << endl;
+	//cout << "Rack: " << Player[playernum]->getRack() << endl;
 	if (firstTurn)
 	{
 		for (size_t i = 0; i < rack_vector.size(); i++)
@@ -394,9 +401,9 @@ void Scrabble::GenerateMoves(int playernum)
 			new_rack.erase(new_rack.begin() + i);
 			if (L == '[')
 			{
-				for (size_t i = 0; i < 26; i++)
+				for (size_t j = 0; j < 26; j++)
 				{
-					L = char(i + 65);
+					L = char(j + 65);
 					word.push_back(L);
 					GetWordsHorizontal(new_rack, root->findChild(L), 112, 112, word, 1, 0, 2, new_rack.size());
 					word.pop_back();
@@ -413,8 +420,11 @@ void Scrabble::GenerateMoves(int playernum)
 	}
 	else
 	{
-		for (size_t i = 0; i < 225; i++)
+		for (auto i : BoardRep->getAnchors())
 		{
+			//cout << i << endl;
+			//cout << BoardRep->getLetter(i) << endl;
+			//cout << Player[playernum]->getRack() << endl;
 			unsigned char x = i % 15;
 			unsigned char y = i / 15;
 			if (BoardRep->getLetter(i) != '0')
@@ -431,10 +441,50 @@ void Scrabble::GenerateMoves(int playernum)
 					GetWordsHorizontal(rack_vector, root->findChild(BoardRep->getLetter(i)), i, i, word, 1, point_value[BoardRep->getLetter(i) - 'A'], 1 * BoardRep->getWordBonus(i), rack_vector.size());
 				}
 			}
+			else
+			{
+				for (size_t j = 0; j < rack_vector.size(); j++)
+				{
+					string word;
+					vector<char> new_rack = rack_vector;
+					char L = new_rack[j];
+					new_rack.erase(new_rack.begin() + j);
+					if (BoardRep->getCrossSet(i, L) && L != '[') //if L is a valid letter for tile i
+					{
+						word.push_back(L);
+						GetWordsHorizontal(new_rack, root->findChild(L), i, i, word, 1, getPointValue(L, i), 1 * BoardRep->getWordBonus(i), new_rack.size());
+						GetWordsVertical(new_rack, root->findChild(L), i, i, word, 1, getPointValue(L, i), 1 * BoardRep->getWordBonus(i), new_rack.size());
+					}
+					else if (L == '[')
+					{
+						for (size_t k = 0; k < 26; k++)
+						{
+							L = char(k + 'A');
+							if (BoardRep->getCrossSet(i, L))
+							{
+								word.push_back(L);
+								GetWordsHorizontal(new_rack, root->findChild(L), i, i, word, 1, getPointValue(L, i), 1 * BoardRep->getWordBonus(i), new_rack.size());
+								GetWordsVertical(new_rack, root->findChild(L), i, i, word, 1, getPointValue(L, i), 1 * BoardRep->getWordBonus(i), new_rack.size());
+								word.pop_back();
+							}
+							
+						}
+					}
+					
+
+				}
+			}
+		}
+		for (size_t i = 0; i < BoardRep->getAnchors().size(); i++)
+		{
+			
 		}
 	}
 	
-	
+	auto stop = high_resolution_clock::now();
+	auto duration = duration_cast<milliseconds>(stop - start);
+	cout << "Finished Move generation" << endl;
+	cout << "Finding all possible moves took: " << duration.count() << " milliseconds" << endl;
 	PlayBestMove(playernum);
 }
 
@@ -614,12 +664,12 @@ void Scrabble::PlayBestMove(int playernum)
 	string word = get<1>(highest_points);
 	int square = get<0>(highest_points);
 	int postjoin = 1;
-	cout << "Highest point value word is: " << word << " with " << get<2>(highest_points) << " points and anchor " << square %15 << ", " << square / 15 << endl;
+	//cout << "Highest point value word is: " << word << " with " << get<2>(highest_points) << " points and anchor " << square %15 << ", " << square / 15 << endl;
 	for (size_t i = 0; i < word.length(); i++)
 	{
 		if (square < 0 || square > 225)
 		{
-			cout << "ERROR: SQUARE OUTSIDE BOUNDS OF ARRAY IN PLAYBESTMOVE() AT: " << square << endl;
+			//cout << "ERROR: SQUARE OUTSIDE BOUNDS OF ARRAY IN PLAYBESTMOVE() AT: " << square << endl;
 			break;
 		}
 		if (word[i] == '+')
@@ -640,7 +690,7 @@ void Scrabble::PlayBestMove(int playernum)
 			
 			else if (ToVerify->getLetter(square) == '0' && Player[playernum]->RemoveFromRack('['))
 			{
-				cout << "Placed a blank as " << word[i] << endl;
+				//cout << "Placed a blank as " << word[i] << endl;
 				ToVerify->PlaceTile(square, word[i], true);
 				toVerify_Vector.push_back(make_tuple(square, word[i]));
 				square -= H_or_V * postjoin;
@@ -653,11 +703,11 @@ void Scrabble::PlayBestMove(int playernum)
 	}
 	if (VerifyBoard(playernum))
 	{
-		cout << "Rack: " << Player[playernum]->getRack() << endl;
+		//cout << "Rack: " << Player[playernum]->getRack() << endl;
 		FillRack(playernum);
-		cout << "Rack: " << Player[playernum]->getRack() << endl;
-		cout << "Board Verified" << endl;
-		cout << endl;
+		//cout << "Rack: " << Player[playernum]->getRack() << endl;
+		//cout << "Board Verified" << endl;
+		//cout << endl;
 		Valid_Horizontal_Words.clear();
 		Valid_Vertical_Words.clear();
 		//Player[playernum]->AddPoints(get<2>(highest_points));
@@ -668,7 +718,7 @@ void Scrabble::PlayBestMove(int playernum)
 	}
 	else
 	{
-		cout << "Board NOT Verified" << endl;
+		//cout << "Board NOT Verified" << endl;
 		if (H_or_V == 1)
 		{
 			Valid_Horizontal_Words.erase(highest_points);
@@ -685,7 +735,7 @@ void Scrabble::PlayBestMove(int playernum)
 
 void Scrabble::FillRack(int playernum)
 {
-	cout << "Filling Rack" << endl;
+	//cout << "Filling Rack" << endl;
 	for (size_t i = 0; i < 7; i++)
 	{
 		if (Player[playernum]->getRack()[i] == '0')
@@ -714,6 +764,26 @@ void Scrabble::DisplayBoardData()
 			cout << endl;
 		}
 		
+	}
+}
+
+
+void Scrabble::ShuffleRack(int playernum)
+{
+	ALLBoardtoRack(Player[playernum]->getRack());
+	vector<char> store;
+	for (size_t i = 0; i < 7; i++)
+	{
+		if (Player[playernum]->getRack()[i] != '0')
+		{
+			store.push_back(Player[playernum]->getRack()[i]);
+			Player[playernum]->getRack()[i] == '0';
+		}
+	}
+	store = TileBag->Replace(store);
+	for (size_t i = 0; i < store.size(); i++)
+	{
+		Player[playernum]->getRack()[i] = store[i];
 	}
 }
 

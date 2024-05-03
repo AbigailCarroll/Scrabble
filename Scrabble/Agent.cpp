@@ -76,7 +76,7 @@ void Agent::AddPoints(int points_)
 	this->points += points_;
 }
 
- vector<char> Agent::ShuffleRack()
+ vector<char> Agent::RemoveALLRack()
 {
 	 vector<char> out;
 	 for (size_t i = 0; i < RACK_SIZE; i++)

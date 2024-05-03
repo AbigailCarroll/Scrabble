@@ -18,7 +18,7 @@ public:
 
 	void AddtoRack(vector<char> L);
 
-	vector<char> ShuffleRack(); //takes all tiles on the rack and places them back into the bag
+	vector<char> RemoveALLRack(); //takes all tiles on the rack and places them back into the bag
 
 	void AddPoints(int points_);
 

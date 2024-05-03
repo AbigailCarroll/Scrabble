@@ -43,6 +43,43 @@ void Node::insert(string word)
 	}
 }
 
+vector<char> Node::getCrossSetChildren(string word)
+{
+	vector<char> output;
+
+	int reference;
+	if (word[0] == '+')
+	{
+		reference = 26;
+	}
+	else
+	{
+		reference = word[0] - 'A';
+	}
+	if (reference < 0 || reference > 26)
+	{
+		return output;
+	}
+	//cout << reference << endl;
+	if (children[reference] == nullptr)
+	{
+		return output;
+	}
+	word = word.substr(1);
+	if (word.length() > 0)
+	{
+		return children[reference]->getCrossSetChildren(word);
+	}
+	for (size_t i = 0; i < 26; i++)
+	{
+		if (children[i] != nullptr)
+		{
+			output.push_back(i);
+		}
+	}
+	return output;
+}
+
 bool Node::find(string word)
 {
 	int reference;
@@ -105,9 +142,9 @@ Node* Node::findChild(char L)
 	{
 		return children[26];
 	}
-	else if (L - 65 < 26)
+	else if (L - 'A' < 26)
 	{
-		return children[L - 65];
+		return children[L - 'A'];
 	}
 	
 	return nullptr;
@@ -139,6 +176,7 @@ bool Node::getTerminal()
 {
 	return terminal;
 }
+
 
 
 

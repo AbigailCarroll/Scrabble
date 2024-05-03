@@ -111,6 +111,13 @@ int main()
     generate_button.setScale(1, 1);
     generate_button.setPosition(600, 1150);
 
+    Texture ShuffleButtonTexture;
+    ShuffleButtonTexture.loadFromFile("Shuffle.png");
+    Sprite shuffle_button;
+    shuffle_button.setTexture(ShuffleButtonTexture);
+    shuffle_button.setScale(1, 1);
+    shuffle_button.setPosition(1110, 700);
+
     Font font;
     if (!font.loadFromFile("Arial/arial.ttf"))
     {
@@ -171,7 +178,7 @@ int main()
                         if (Tilex == 16 && Tiley <= 7 && Game.getPlayerRack(0)[Tiley] != '0') //select from the rack
                         {
                             toPlace = Tiley;
-                            cout << toPlace << endl;
+                            //cout << toPlace << endl;
                         }
                         else if (toPlace != -1 && Tilex <= 15 && Tiley <= 15 && Game.isEmpty(Tilex, Tiley)) //place from rack to the board
                         {
@@ -188,12 +195,17 @@ int main()
                                 Game.FillRack(0);
                                 Game.GenerateMoves(1);
                             }
-                            else { cout << "Board not verified" << endl; }
+                            //else { cout << "Board not verified" << endl; }
                         }
                         else if (x >= 600 && x < 900 && y > 1150 && y < 1250)
                         {
                             Game.ALLBoardtoRack(Game.getAgent(0)->getRack());
                             Game.GenerateMoves(0);
+                            Game.GenerateMoves(1);
+                        }
+                        else if (x >= 1110 && x < 1280 && y >= 700 && y <= 840)
+                        {
+                            Game.ShuffleRack(0);
                             Game.GenerateMoves(1);
                         }
 
@@ -219,6 +231,7 @@ int main()
         DrawRack(Game.getAgent(0)->getRack(), TileSprite, window);
         window.draw(submit_button);
         window.draw(generate_button);
+        window.draw(shuffle_button);
         player1Points.setString("Player 2 Points: " + to_string(Game.getPoints(1)));
         player0Points.setString("Player 1 Points: " + to_string(Game.getPoints(0)));
         if (Game.isOver())
@@ -232,8 +245,7 @@ int main()
                 player1Points.setString("Player 2 Points: " + to_string(Game.getPoints(1)) + " WINNER!");
             }
         }
-
-
+        
         window.draw(player0Points);
         window.draw(player1Points);
         window.display();

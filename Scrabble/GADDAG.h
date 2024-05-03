@@ -24,6 +24,8 @@ public:
 
 	bool getTerminal();
 
+	vector<char> getCrossSetChildren(string word);
+
 private:
 
 	Node* children[27];

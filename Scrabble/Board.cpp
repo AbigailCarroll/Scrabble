@@ -43,7 +43,10 @@ Board::Board()
 	}
 	for (size_t i = 0; i < 225; i++)
 	{
-		crossSet[i] == nullptr;
+		for (size_t j = 0; j < 27; j++)
+		{
+			crossSet[i][j] = false;
+		}
 	}
 	anchors.insert(112);
 }
@@ -203,15 +206,78 @@ bool* Board::getValidLetters(int index)
 	return crossSet[index];
 }
 
+void Board::getWord(int direction, int x, int y, Node* root)
+{
+	int start, end;
+	string word = "";
+	int targetX = x, targetY = y;
+	while (getLetter(targetX, targetY) != '0') //gets all letters to the left and top of the target tile.
+	{
+		word = getLetter(targetX, targetY) + word;
+		targetX = targetX - 1 + direction;
+		targetY = targetY - direction;
+	}
+	start = getIndex(targetX, targetY);
+	targetX = x - direction + 1;
+	targetY = y + direction;
+	while (getLetter(targetX, targetY) != '0') //gets all letters to the right and below the target tile.
+	{
+		word = word + getLetter(targetX, targetY);
+		targetX = targetX + 1 - direction;
+		targetY = targetY + direction;
+	}
+	end = getIndex(targetX, targetY);
+	reverse(word.begin(), word.end());
+	vector<char> startCrossSet = root->getCrossSetChildren(word);
+	for (size_t i = 0; i < startCrossSet.size(); i++)
+	{
+		crossSet[start][startCrossSet[i]] = true;
+	}
+	vector<char> endCrossSet = root->getCrossSetChildren(word + '+');
+	for (size_t i = 0; i < endCrossSet.size(); i++)
+	{
+		crossSet[end][startCrossSet[i]] = true;
+	}
+	crossSet[start][26] = true;
+	crossSet[end][26] = true;
+	
+}
+
+
 
 void Board::UpdateCrossSets(Node* root)
 {
-	
+	for (size_t i = 0; i < 15; i++)
+	{
+		for (size_t j = 0; j < 15; j++)
+		{
+			if (getLetter(i, j) != '0')
+			{
+				getWord(0, i, j, root);
+				getWord(1, i, j, root);
+			}
+		}
+	}
+}
+
+bool Board::getCrossSet(int index, char L)
+{
+	return crossSet[index][L - 'A'];
+}
+
+bool Board::hasAdjacent(int x, int y)
+{
+	if (getLetter(x+1,y) != '0' || getLetter(x - 1, y) != '0' || getLetter(x, y + 1) != '0' || getLetter(x, y - 1) != '0')
+	{
+		return true;
+	}
+	return false;
 }
 
 void Board::UpdateAnchors()
 {
 	anchors.clear();
+	anchors.insert(112);
 	for (size_t i = 1; i < 14; i++)
 	{
 		for (size_t j = 1; j < 14; j++)

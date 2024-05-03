@@ -67,6 +67,8 @@ public:
 
 	void GameOver();
 
+	void ShuffleRack(int playernum);
+
 private:
 
 	Board* BoardRep;

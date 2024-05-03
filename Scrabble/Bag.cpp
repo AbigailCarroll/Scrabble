@@ -33,7 +33,7 @@ char Bag::Pull()
 {
 	if (arr_.size() < 1)
 	{
-		cout << "ERROR: Bag is empty" << endl;
+		//cout << "ERROR: Bag is empty" << endl;
 		return '0';
 	}
 	int rand;
@@ -64,12 +64,13 @@ vector<char> Bag::Pull(int i)
 		arr_.erase(arr_.begin() + rand); // erases letter at index rand
 		//cout << arr_.size() << endl;
 	}
-	cout << "Rack: ";
+	/*cout << "Rack: ";
 	for (size_t j = 0; j < i; j++)
 	{
 		cout << output[j] << ", ";
 	}
 	cout << endl;
+	*/
 	return output;
 }
 
@@ -91,5 +92,14 @@ bool Bag::isBagEmpty()
 		return true;
 	}
 	return false;
+}
+
+vector<char> Bag::Replace(vector<char> tiles)
+{
+	for (size_t i = 0; i < tiles.size(); i++)
+	{
+		arr_.push_back(tiles[i]);
+	}
+	return Pull(7);
 }
 

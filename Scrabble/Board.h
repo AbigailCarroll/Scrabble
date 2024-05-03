@@ -64,8 +64,14 @@ public:
 
 	void UpdateAnchors();
 
+	void getWord(int direction, int x, int y, Node* root);
+
+	bool getCrossSet(int index, char L);
+	
+	bool hasAdjacent(int x, int y);
+
 private:
 	Tile tiles[225];
-	bool crossSet[225][26];
+	bool crossSet[225][27]; //0-25 store which letters are valid, 26 stores if it's an anchor square
 	set<int> anchors;
 };
